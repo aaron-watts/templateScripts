@@ -1,0 +1,54 @@
+#!/usr/bin/bash
+
+dir=$(pwd)
+
+if [ -z "$1" ]
+then
+    fname="static_project"
+elif ! [ -z "$1" ]
+then
+    fname=$1
+fi
+
+mkdir $dir/$fname
+
+echo "<!DOCTYPE html>
+<html lang=\"en\">
+<head>
+    <meta charset=\"UTF-8\">
+    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <title>Document</title>
+    <link rel=\"stylesheet\" href=\"main.css\">
+</head>
+<body>
+    <div class=\"screen-centre\">
+        <h1 class=\"bordered-header\">Hello, World!</h1>
+    </div> 
+    
+    <script src=\"app.js\"></script>
+    
+</body>
+</html>" >> $dir/$fname/index.html
+
+echo "body {
+    font-family: sans-serif;
+}
+
+.screen-centre {
+    height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.bordered-header {
+    border: 1px solid #DDDDDD;
+    padding: 2rem;
+}" >> $dir/$fname/main.css
+
+echo "const sayHello = () => {
+    console.log('Hello, World!');
+}
+
+sayHello();" >> $dir/$fname/app.js

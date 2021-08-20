@@ -1,0 +1,18 @@
+#!/usr/bin/bash
+
+dir=$(pwd)
+
+if [ -z "$1" ]
+then
+    fname=template
+elif ! [ -z "$1" ]
+then
+    fname=$1
+fi
+
+echo "#include <stdio.h>
+
+int main(void)
+{
+    printf(\"Hello, World!\");   
+}" >> $dir/$fname.c
