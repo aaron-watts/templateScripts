@@ -1,0 +1,129 @@
+#!/usr/bin/bash
+
+dir=$(pwd)
+
+if [ -z "$1" ]
+then
+    fname="new_express_app"
+elif ! [ -z "$1" ]
+then
+    fname=$1
+fi
+
+express_dir=$dir/$fname
+
+# create the express directory
+mkdir $express_dir
+
+
+(
+    cd $express_dir 
+
+    # create the sub directories
+    mkdir views controllers routes public public/css public/javascript
+
+    # initialize npm and install modules
+    npm init -y
+    npm i express ejs ejs-mate dotenv 
+
+    # create dotenv file
+    touch .env
+
+    # write app.js
+    echo "if (process.env.NODE_ENV !== \"production\") {
+    require('dotenv').config();
+}
+
+const express = require('express');
+const app = express();
+
+const path = require('path');
+const ejsMate = require('ejs-mate');
+
+const Routes = require('./routes/index');
+
+const port = process.env.PORT || 3000;
+
+app.engine('ejs', ejsMate);
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, '/views'));
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/', Routes);
+
+app.listen(port, () => {
+    console.log('Listening');
+})" >> app.js
+
+    # create controller
+    (
+        cd controllers
+
+        echo "module.exports.index = (req, res) => {
+    res.render('index');
+}" >> index.js
+    )
+
+    # create router
+    (
+        cd routes
+
+        echo "const express = require('express');
+const router = express.Router();
+const controller = require('../controllers/index');
+
+router.route('/')
+    .get(controller.index)
+
+module.exports = router;" >> index.js
+    )
+
+    # create views
+    (
+        cd views
+
+        mkdir layouts
+
+        echo "<!DOCTYPE html>
+<html lang=\"en\">
+
+<head>
+    <meta charset=\"UTF-8\">
+    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <title>New Express App</title>
+    
+    <link rel=\"stylesheet\" href=\"/css/main.css\">
+</head>
+
+<body class=\"center-content\">
+    <%- body %>
+
+    <script src=\"/javascript/app.js\"></script>
+</body>
+
+</html>" >> layouts/boilerplate.ejs
+
+        echo "<% layout('layouts/boilerplate') %>
+
+<h1>Let's Get Started!</h1>" >> index.ejs
+    )
+
+    # create public files
+    (
+        cd public
+
+        echo ".center-content {
+    height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}" >> css/main.css
+
+        echo "console.log('Hello, World!');" >> javascript/app.js
+    )
+)
+
